@@ -1,23 +1,17 @@
 #include <iostream>
 #include "Cidade.h"
-#include "Passageiro.h"
+#include "Transporte.h"
 
 int main() {
     Cidade natal("Natal");
-    Cidade mossoro("Mossoró");
 
-    Passageiro p("Anderson", &natal);
+    Transporte onibus("Ônibus RN", 'T', 40, 80, 200, 1, &natal);
 
-    std::cout << "Passageiro: " << p.getNome()
-              << " | Local atual: " << p.getLocalAtual()->getNome()
-              << std::endl;
-
-    // simula mudança de cidade
-    p.setLocalAtual(&mossoro);
-
-    std::cout << "Após viagem: " << p.getNome()
-              << " | Local atual: " << p.getLocalAtual()->getNome()
-              << std::endl;
+    std::cout << "Transporte: " << onibus.getNome() << std::endl;
+    std::cout << "Tipo: " << onibus.getTipo() << std::endl;
+    std::cout << "Capacidade: " << onibus.getCapacidade() << " passageiros" << std::endl;
+    std::cout << "Velocidade: " << onibus.getVelocidade() << " km/h" << std::endl;
+    std::cout << "Local atual: " << onibus.getLocalAtual()->getNome() << std::endl;
 
     return 0;
 }
