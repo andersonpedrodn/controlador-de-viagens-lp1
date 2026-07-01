@@ -1,22 +1,18 @@
 #include <iostream>
-#include "Cidade.h"
-#include "Transporte.h"
-#include "Passageiro.h"
-#include "Viagem.h"
+#include "ControladorDeTransito.h"
 
 int main() {
-    Cidade natal("Natal");
-    Cidade mossoro("Mossoró");
+    ControladorDeTransito ctrl;
 
-    Transporte onibus("Ônibus RN", 'T', 40, 80, 200, 1, &natal);
-    Passageiro anderson("Anderson", &natal);
+    ctrl.cadastrarCidade("Natal");
+    ctrl.cadastrarCidade("Mossoró");
+    ctrl.cadastrarTrajeto("Natal", "Mossoró", 'T', 280);
+    ctrl.cadastrarTransporte("Ônibus RN", 'T', 40, 80, 200, 1, "Natal");
+    ctrl.cadastrarPassageiro("Anderson", "Natal");
 
-    std::vector<Passageiro*> passageiros = {&anderson};
-
-    Viagem v(&onibus, passageiros, &natal, &mossoro);
-    v.iniciarViagem();
-    v.avancarHoras(2);
-    v.relatarEstado();
+    ctrl.iniciarViagem("Ônibus RN", {"Anderson"}, "Natal", "Mossoró");
+    ctrl.avancarHoras(3);
+    ctrl.relatarEstado();
 
     return 0;
 }
