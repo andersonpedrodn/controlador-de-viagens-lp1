@@ -6,6 +6,8 @@
 #include "Transporte.h"
 #include "Passageiro.h"
 #include "Viagem.h"
+#include <fstream>
+
 
 class ControladorDeTransito {
 private:
@@ -35,4 +37,6 @@ public:
     void relatarTransportes();
     void relatarViagensEmAndamento();
     void relatarCidadesMaisVisitadas();
+    void salvarDados();
+    void carregarDados();
 };

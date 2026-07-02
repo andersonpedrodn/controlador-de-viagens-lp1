@@ -3,6 +3,7 @@
 #include <queue>
 #include <map>
 #include <algorithm>
+#include <sstream>
 
 Cidade* ControladorDeTransito::buscarCidade(std::string nome) {
     for (Cidade* c : cidades)
@@ -249,4 +250,99 @@ void ControladorDeTransito::relatarCidadesMaisVisitadas() {
     for (auto& par : ranking) {
         std::cout << par.first->getNome() << " | Visitas: " << par.second << std::endl;
     }
+}
+void ControladorDeTransito::salvarDados() {
+    std::ofstream fileCidades("data/cidades.txt");
+    for (Cidade* c : cidades)
+        fileCidades << c->getNome() << "\n";
+    fileCidades.close();
+
+    std::ofstream fileTrajetos("data/trajetos.txt");
+    for (Trajeto* t : trajetos)
+        fileTrajetos << t->getOrigem()->getNome() << ";"
+                     << t->getDestino()->getNome() << ";"
+                     << t->getTipo() << ";"
+                     << t->getDistancia() << "\n";
+    fileTrajetos.close();
+
+    std::ofstream fileTransportes("data/transportes.txt");
+    for (Transporte* t : transportes)
+        fileTransportes << t->getNome() << ";"
+                        << t->getTipo() << ";"
+                        << t->getCapacidade() << ";"
+                        << t->getVelocidade() << ";"
+                        << t->getDistanciaEntreDescansos() << ";"
+                        << t->getTempoDescanso() << ";"
+                        << t->getLocalAtual()->getNome() << "\n";
+    fileTransportes.close();
+
+    std::ofstream filePassageiros("data/passageiros.txt");
+    for (Passageiro* p : passageiros)
+        filePassageiros << p->getNome() << ";"
+                        << p->getLocalAtual()->getNome() << "\n";
+    filePassageiros.close();
+
+    std::cout << "Dados salvos com sucesso!" << std::endl;
+}
+
+void ControladorDeTransito::carregarDados() {
+    std::string linha;
+
+    std::ifstream fileCidades("data/cidades.txt");
+    if (fileCidades.is_open()) {
+        while (std::getline(fileCidades, linha)) {
+            if (!linha.empty())
+                cadastrarCidade(linha);
+        }
+        fileCidades.close();
+    }
+
+    std::ifstream fileTrajetos("data/trajetos.txt");
+    if (fileTrajetos.is_open()) {
+        while (std::getline(fileTrajetos, linha)) {
+            if (linha.empty()) continue;
+            std::stringstream ss(linha);
+            std::string origem, destino, tipoStr, distStr;
+            std::getline(ss, origem, ';');
+            std::getline(ss, destino, ';');
+            std::getline(ss, tipoStr, ';');
+            std::getline(ss, distStr, ';');
+            cadastrarTrajeto(origem, destino, tipoStr[0], std::stoi(distStr));
+        }
+        fileTrajetos.close();
+    }
+
+    std::ifstream fileTransportes("data/transportes.txt");
+    if (fileTransportes.is_open()) {
+        while (std::getline(fileTransportes, linha)) {
+            if (linha.empty()) continue;
+            std::stringstream ss(linha);
+            std::string nome, tipoStr, cap, vel, dist, tempo, local;
+            std::getline(ss, nome, ';');
+            std::getline(ss, tipoStr, ';');
+            std::getline(ss, cap, ';');
+            std::getline(ss, vel, ';');
+            std::getline(ss, dist, ';');
+            std::getline(ss, tempo, ';');
+            std::getline(ss, local, ';');
+            cadastrarTransporte(nome, tipoStr[0], std::stoi(cap), std::stoi(vel),
+                                std::stoi(dist), std::stoi(tempo), local);
+        }
+        fileTransportes.close();
+    }
+
+    std::ifstream filePassageiros("data/passageiros.txt");
+    if (filePassageiros.is_open()) {
+        while (std::getline(filePassageiros, linha)) {
+            if (linha.empty()) continue;
+            std::stringstream ss(linha);
+            std::string nome, local;
+            std::getline(ss, nome, ';');
+            std::getline(ss, local, ';');
+            cadastrarPassageiro(nome, local);
+        }
+        filePassageiros.close();
+    }
+
+    std::cout << "Dados carregados com sucesso!" << std::endl;
 }

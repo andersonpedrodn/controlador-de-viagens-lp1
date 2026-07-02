@@ -16,6 +16,7 @@ void exibirMenu() {
     std::cout << "9. Relatar Transportes" << std::endl;
     std::cout << "10. Viagens em Andamento" << std::endl;
     std::cout << "11. Cidades Mais Visitadas" << std::endl;
+    std::cout << "12. Salvar Dados" << std::endl;
     std::cout << "0. Sair" << std::endl;
     std::cout << "Escolha: ";
 }
@@ -23,6 +24,7 @@ void exibirMenu() {
 int main() {
     ControladorDeTransito ctrl;
     int opcao;
+    ctrl.carregarDados(); 
 
     while (true) {
         exibirMenu();
@@ -30,6 +32,7 @@ int main() {
         std::cin.ignore();
 
         if (opcao == 0) {
+            ctrl.salvarDados();
             std::cout << "Encerrando sistema." << std::endl;
             break;
 
@@ -125,6 +128,9 @@ int main() {
 
         } else if (opcao == 11) {
             ctrl.relatarCidadesMaisVisitadas();
+
+        } else if (opcao == 12) {
+            ctrl.salvarDados();
 
         } else {
             std::cout << "Opção inválida." << std::endl;

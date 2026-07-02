@@ -1,0 +1,2 @@
+Natal;Mossoro;T;280
+Mossoro;Fortaleza;T;380
