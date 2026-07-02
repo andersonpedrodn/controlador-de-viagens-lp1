@@ -3,6 +3,9 @@
 #include <vector>
 #include "ControladorDeTransito.h"
 
+/**
+ * @brief Exibe o menu principal de opções no console.
+ */
 void exibirMenu() {
     std::cout << "\n=== Controlador de Viagens ===" << std::endl;
     std::cout << "1. Cadastrar Cidade" << std::endl;
@@ -21,10 +24,16 @@ void exibirMenu() {
     std::cout << "Escolha: ";
 }
 
+/**
+ * @brief Ponto de entrada do programa.
+ *
+ * Carrega dados salvos anteriormente, entra em loop de menu e salva
+ * automaticamente ao encerrar (opção 0).
+ */
 int main() {
     ControladorDeTransito ctrl;
     int opcao;
-    ctrl.carregarDados(); 
+    ctrl.carregarDados();
 
     while (true) {
         exibirMenu();

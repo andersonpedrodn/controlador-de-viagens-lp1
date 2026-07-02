@@ -5,24 +5,43 @@
 #include <algorithm>
 #include <sstream>
 
+/**
+ * @brief Busca uma cidade pelo nome percorrendo o vetor de cidades.
+ * @return Ponteiro para a cidade encontrada, ou nullptr.
+ */
 Cidade* ControladorDeTransito::buscarCidade(std::string nome) {
     for (Cidade* c : cidades)
         if (c->getNome() == nome) return c;
     return nullptr;
 }
 
+/**
+ * @brief Busca um transporte pelo nome percorrendo o vetor de transportes.
+ * @return Ponteiro para o transporte encontrado, ou nullptr.
+ */
 Transporte* ControladorDeTransito::buscarTransporte(std::string nome) {
     for (Transporte* t : transportes)
         if (t->getNome() == nome) return t;
     return nullptr;
 }
 
+/**
+ * @brief Busca um passageiro pelo nome percorrendo o vetor de passageiros.
+ * @return Ponteiro para o passageiro encontrado, ou nullptr.
+ */
 Passageiro* ControladorDeTransito::buscarPassageiro(std::string nome) {
     for (Passageiro* p : passageiros)
         if (p->getNome() == nome) return p;
     return nullptr;
 }
 
+/**
+ * @brief Busca um trajeto direto entre duas cidades.
+ *
+ * Compara ponteiros de cidades (não nomes), então origem e destino
+ * devem ser os mesmos objetos armazenados no vetor de cidades.
+ * @return Ponteiro para o trajeto encontrado, ou nullptr.
+ */
 Trajeto* ControladorDeTransito::buscarTrajeto(Cidade* origem, Cidade* destino) {
     for (Trajeto* t : trajetos)
         if (t->getOrigem() == origem && t->getDestino() == destino)
@@ -30,6 +49,13 @@ Trajeto* ControladorDeTransito::buscarTrajeto(Cidade* origem, Cidade* destino) {
     return nullptr;
 }
 
+/**
+ * @brief Calcula o menor caminho entre duas cidades usando BFS.
+ *
+ * Trata os trajetos como arestas de um grafo orientado e retorna
+ * a sequência de cidades do caminho com menor número de saltos.
+ * Retorna vetor vazio se não houver rota entre origem e destino.
+ */
 std::vector<Cidade*> ControladorDeTransito::calcularMelhorTrajeto(Cidade* origem, Cidade* destino) {
     std::queue<Cidade*> fila;
     std::map<Cidade*, Cidade*> anterior;
@@ -62,6 +88,9 @@ std::vector<Cidade*> ControladorDeTransito::calcularMelhorTrajeto(Cidade* origem
     return {};
 }
 
+/**
+ * @brief Cadastra uma nova cidade se ela ainda não existir.
+ */
 void ControladorDeTransito::cadastrarCidade(std::string nome) {
     if (buscarCidade(nome)) {
         std::cout << "Cidade já cadastrada: " << nome << std::endl;
@@ -71,6 +100,9 @@ void ControladorDeTransito::cadastrarCidade(std::string nome) {
     std::cout << "Cidade cadastrada: " << nome << std::endl;
 }
 
+/**
+ * @brief Cadastra um trajeto entre duas cidades já existentes no sistema.
+ */
 void ControladorDeTransito::cadastrarTrajeto(std::string nomeOrigem, std::string nomeDestino,
                                               char tipo, int distancia) {
     Cidade* origem = buscarCidade(nomeOrigem);
@@ -85,6 +117,9 @@ void ControladorDeTransito::cadastrarTrajeto(std::string nomeOrigem, std::string
     std::cout << "Trajeto cadastrado: " << nomeOrigem << " -> " << nomeDestino << std::endl;
 }
 
+/**
+ * @brief Cadastra um transporte posicionado em uma cidade já existente.
+ */
 void ControladorDeTransito::cadastrarTransporte(std::string nome, char tipo, int capacidade,
                                                  int velocidade, int distanciaEntreDescansos,
                                                  int tempoDeDescanso, std::string localAtual) {
@@ -98,6 +133,9 @@ void ControladorDeTransito::cadastrarTransporte(std::string nome, char tipo, int
     std::cout << "Transporte cadastrado: " << nome << std::endl;
 }
 
+/**
+ * @brief Cadastra um passageiro em uma cidade já existente.
+ */
 void ControladorDeTransito::cadastrarPassageiro(std::string nome, std::string localAtual) {
     Cidade* cidade = buscarCidade(localAtual);
     if (!cidade) {
@@ -108,6 +146,13 @@ void ControladorDeTransito::cadastrarPassageiro(std::string nome, std::string lo
     std::cout << "Passageiro cadastrado: " << nome << std::endl;
 }
 
+/**
+ * @brief Planeja e inicia uma viagem, decompondo a rota em etapas encadeadas.
+ *
+ * Usa BFS para encontrar a rota, cria uma Viagem por par de cidades consecutivas
+ * e as encadeia via setProxima. Apenas a primeira etapa é iniciada imediatamente;
+ * as demais são disparadas automaticamente ao concluir a etapa anterior.
+ */
 void ControladorDeTransito::iniciarViagem(std::string nomeTransporte,
                                            std::vector<std::string> nomesPassageiros,
                                            std::string nomeOrigem, std::string nomeDestino) {
@@ -157,17 +202,26 @@ void ControladorDeTransito::iniciarViagem(std::string nomeTransporte,
     if (primeira) primeira->iniciarViagem();
 }
 
+/**
+ * @brief Repassa o avanço de horas para todas as viagens em andamento.
+ */
 void ControladorDeTransito::avancarHoras(int horas) {
     for (Viagem* v : viagens)
         if (v->isEmAndamento())
             v->avancarHoras(horas);
 }
 
+/**
+ * @brief Exibe o estado de todas as viagens cadastradas no sistema.
+ */
 void ControladorDeTransito::relatarEstado() {
     std::cout << "\n=== Estado do Sistema ===" << std::endl;
     for (Viagem* v : viagens)
         v->relatarEstado();
 }
+/**
+ * @brief Exibe a localização de cada passageiro — cidade ou trecho em trânsito.
+ */
 void ControladorDeTransito::relatarPassageiros() {
     std::cout << "\n=== Localização dos Passageiros ===" << std::endl;
 
@@ -191,6 +245,9 @@ void ControladorDeTransito::relatarPassageiros() {
     }
 }
 
+/**
+ * @brief Exibe a localização de cada transporte — cidade ou trecho em trânsito.
+ */
 void ControladorDeTransito::relatarTransportes() {
     std::cout << "\n=== Localização dos Transportes ===" << std::endl;
 
@@ -213,6 +270,9 @@ void ControladorDeTransito::relatarTransportes() {
     }
 }
 
+/**
+ * @brief Exibe apenas as viagens que ainda estão em progresso.
+ */
 void ControladorDeTransito::relatarViagensEmAndamento() {
     std::cout << "\n=== Viagens em Andamento ===" << std::endl;
 
@@ -227,6 +287,9 @@ void ControladorDeTransito::relatarViagensEmAndamento() {
         std::cout << "Nenhuma viagem em andamento." << std::endl;
 }
 
+/**
+ * @brief Exibe as cidades de destino com mais viagens concluídas, em ordem decrescente.
+ */
 void ControladorDeTransito::relatarCidadesMaisVisitadas() {
     std::cout << "\n=== Cidades Mais Visitadas ===" << std::endl;
 
@@ -251,6 +314,12 @@ void ControladorDeTransito::relatarCidadesMaisVisitadas() {
         std::cout << par.first->getNome() << " | Visitas: " << par.second << std::endl;
     }
 }
+/**
+ * @brief Salva cidades, trajetos, transportes e passageiros em arquivos CSV na pasta data/.
+ *
+ * Cada entidade tem seu próprio arquivo. O estado de viagens em andamento
+ * não é persistido — ao recarregar, apenas o cadastro base é restaurado.
+ */
 void ControladorDeTransito::salvarDados() {
     std::ofstream fileCidades("data/cidades.txt");
     for (Cidade* c : cidades)
@@ -285,6 +354,12 @@ void ControladorDeTransito::salvarDados() {
     std::cout << "Dados salvos com sucesso!" << std::endl;
 }
 
+/**
+ * @brief Carrega cidades, trajetos, transportes e passageiros dos arquivos CSV na pasta data/.
+ *
+ * Os campos são separados por ';'. Se um arquivo não existir, ele é ignorado
+ * silenciosamente e o carregamento dos demais continua.
+ */
 void ControladorDeTransito::carregarDados() {
     std::string linha;
 
