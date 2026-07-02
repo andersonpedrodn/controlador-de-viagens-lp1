@@ -12,6 +12,7 @@ private:
     Cidade* destino;
     Viagem* proxima;
     int horasEmTransito;
+    int distancia;
     bool emAndamento;
 
 public:
@@ -24,6 +25,8 @@ public:
     bool isEmAndamento();
     Viagem* getProxima();
     void setProxima(Viagem* prox);
+    void setDistancia(int dist);
+    int getDistancia();
     Transporte* getTransporte();
     Cidade* getOrigem();
     Cidade* getDestino();

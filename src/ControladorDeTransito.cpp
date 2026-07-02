@@ -1,6 +1,7 @@
 #include "ControladorDeTransito.h"
 #include <iostream>
-
+#include <queue>
+#include <map>
 
 Cidade* ControladorDeTransito::buscarCidade(std::string nome) {
     for (Cidade* c : cidades)
@@ -20,6 +21,44 @@ Passageiro* ControladorDeTransito::buscarPassageiro(std::string nome) {
     return nullptr;
 }
 
+Trajeto* ControladorDeTransito::buscarTrajeto(Cidade* origem, Cidade* destino) {
+    for (Trajeto* t : trajetos)
+        if (t->getOrigem() == origem && t->getDestino() == destino)
+            return t;
+    return nullptr;
+}
+
+std::vector<Cidade*> ControladorDeTransito::calcularMelhorTrajeto(Cidade* origem, Cidade* destino) {
+    std::queue<Cidade*> fila;
+    std::map<Cidade*, Cidade*> anterior;
+
+    fila.push(origem);
+    anterior[origem] = nullptr;
+
+    while (!fila.empty()) {
+        Cidade* atual = fila.front();
+        fila.pop();
+
+        if (atual == destino) {
+            std::vector<Cidade*> caminho;
+            Cidade* c = destino;
+            while (c != nullptr) {
+                caminho.insert(caminho.begin(), c);
+                c = anterior[c];
+            }
+            return caminho;
+        }
+
+        for (Trajeto* t : trajetos) {
+            if (t->getOrigem() == atual && anterior.find(t->getDestino()) == anterior.end()) {
+                anterior[t->getDestino()] = atual;
+                fila.push(t->getDestino());
+            }
+        }
+    }
+
+    return {};
+}
 
 void ControladorDeTransito::cadastrarCidade(std::string nome) {
     if (buscarCidade(nome)) {
@@ -67,7 +106,6 @@ void ControladorDeTransito::cadastrarPassageiro(std::string nome, std::string lo
     std::cout << "Passageiro cadastrado: " << nome << std::endl;
 }
 
-
 void ControladorDeTransito::iniciarViagem(std::string nomeTransporte,
                                            std::vector<std::string> nomesPassageiros,
                                            std::string nomeOrigem, std::string nomeDestino) {
@@ -80,7 +118,7 @@ void ControladorDeTransito::iniciarViagem(std::string nomeTransporte,
         return;
     }
 
-    if (transporte->getLocalAtual()->getNome() != nomeOrigem) {
+    if (transporte->getLocalAtual() != origem) {
         std::cout << "Transporte não está na cidade de origem." << std::endl;
         return;
     }
@@ -91,18 +129,37 @@ void ControladorDeTransito::iniciarViagem(std::string nomeTransporte,
         if (p) listaPassageiros.push_back(p);
     }
 
-    Viagem* v = new Viagem(transporte, listaPassageiros, origem, destino);
-    v->iniciarViagem();
-    viagens.push_back(v);
-}
+    std::vector<Cidade*> caminho = calcularMelhorTrajeto(origem, destino);
 
+    if (caminho.empty()) {
+        std::cout << "Não existe trajeto entre " << nomeOrigem << " e " << nomeDestino << std::endl;
+        return;
+    }
+
+    Viagem* primeira = nullptr;
+    Viagem* anterior = nullptr;
+
+    for (int i = 0; i < (int)caminho.size() - 1; i++) {
+        Viagem* v = new Viagem(transporte, listaPassageiros, caminho[i], caminho[i+1]);
+
+        Trajeto* t = buscarTrajeto(caminho[i], caminho[i+1]);
+        if (t) v->setDistancia(t->getDistancia());
+
+        viagens.push_back(v);
+
+        if (!primeira) primeira = v;
+        if (anterior) anterior->setProxima(v);
+        anterior = v;
+    }
+
+    if (primeira) primeira->iniciarViagem();
+}
 
 void ControladorDeTransito::avancarHoras(int horas) {
     for (Viagem* v : viagens)
         if (v->isEmAndamento())
             v->avancarHoras(horas);
 }
-
 
 void ControladorDeTransito::relatarEstado() {
     std::cout << "\n=== Estado do Sistema ===" << std::endl;

@@ -18,6 +18,8 @@ private:
     Cidade* buscarCidade(std::string nome);
     Transporte* buscarTransporte(std::string nome);
     Passageiro* buscarPassageiro(std::string nome);
+    Trajeto* buscarTrajeto(Cidade* origem, Cidade* destino);
+    std::vector<Cidade*> calcularMelhorTrajeto(Cidade* origem, Cidade* destino);
 
 public:
     void cadastrarCidade(std::string nome);
