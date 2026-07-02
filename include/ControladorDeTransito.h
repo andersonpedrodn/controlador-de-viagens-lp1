@@ -31,4 +31,8 @@ public:
                        std::string nomeOrigem, std::string nomeDestino);
     void avancarHoras(int horas);
     void relatarEstado();
+    void relatarPassageiros();
+    void relatarTransportes();
+    void relatarViagensEmAndamento();
+    void relatarCidadesMaisVisitadas();
 };

@@ -14,6 +14,7 @@ private:
     int horasEmTransito;
     int distancia;
     bool emAndamento;
+    bool concluida;
 
 public:
     Viagem(Transporte* transporte, std::vector<Passageiro*> passageiros,
@@ -23,6 +24,7 @@ public:
     void avancarHoras(int horas);
     void relatarEstado();
     bool isEmAndamento();
+    bool isConcluida();
     Viagem* getProxima();
     void setProxima(Viagem* prox);
     void setDistancia(int dist);

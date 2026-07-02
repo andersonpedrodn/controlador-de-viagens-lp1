@@ -11,6 +11,7 @@ Viagem::Viagem(Transporte* transporte, std::vector<Passageiro*> passageiros,
     this->horasEmTransito = 0;
     this->distancia = 0;
     this->emAndamento = false;
+    this->concluida = false;
 }
 
 void Viagem::setDistancia(int dist) { this->distancia = dist; }
@@ -44,6 +45,7 @@ void Viagem::avancarHoras(int horas) {
 
     if (horasEmTransito >= tempoTotal) {
         emAndamento = false;
+        concluida = true;
 
         transporte->setLocalAtual(destino);
         for (Passageiro* p : passageiros)
@@ -68,6 +70,7 @@ void Viagem::relatarEstado() {
 }
 
 bool Viagem::isEmAndamento() { return emAndamento; }
+bool Viagem::isConcluida() { return concluida; }
 Viagem* Viagem::getProxima() { return proxima; }
 void Viagem::setProxima(Viagem* prox) { this->proxima = prox; }
 Transporte* Viagem::getTransporte() { return transporte; }

@@ -11,7 +11,11 @@ void exibirMenu() {
     std::cout << "4. Cadastrar Passageiro" << std::endl;
     std::cout << "5. Iniciar Viagem" << std::endl;
     std::cout << "6. Avançar Horas" << std::endl;
-    std::cout << "7. Relatar Estado" << std::endl;
+    std::cout << "7. Relatar Estado Geral" << std::endl;
+    std::cout << "8. Relatar Passageiros" << std::endl;
+    std::cout << "9. Relatar Transportes" << std::endl;
+    std::cout << "10. Viagens em Andamento" << std::endl;
+    std::cout << "11. Cidades Mais Visitadas" << std::endl;
     std::cout << "0. Sair" << std::endl;
     std::cout << "Escolha: ";
 }
@@ -109,6 +113,18 @@ int main() {
 
         } else if (opcao == 7) {
             ctrl.relatarEstado();
+
+        } else if (opcao == 8) {
+            ctrl.relatarPassageiros();
+
+        } else if (opcao == 9) {
+            ctrl.relatarTransportes();
+
+        } else if (opcao == 10) {
+            ctrl.relatarViagensEmAndamento();
+
+        } else if (opcao == 11) {
+            ctrl.relatarCidadesMaisVisitadas();
 
         } else {
             std::cout << "Opção inválida." << std::endl;

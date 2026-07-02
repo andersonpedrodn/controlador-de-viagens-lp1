@@ -2,6 +2,7 @@
 #include <iostream>
 #include <queue>
 #include <map>
+#include <algorithm>
 
 Cidade* ControladorDeTransito::buscarCidade(std::string nome) {
     for (Cidade* c : cidades)
@@ -165,4 +166,87 @@ void ControladorDeTransito::relatarEstado() {
     std::cout << "\n=== Estado do Sistema ===" << std::endl;
     for (Viagem* v : viagens)
         v->relatarEstado();
+}
+void ControladorDeTransito::relatarPassageiros() {
+    std::cout << "\n=== Localização dos Passageiros ===" << std::endl;
+
+    for (Passageiro* p : passageiros) {
+        bool emTransito = false;
+        for (Viagem* v : viagens) {
+            if (v->isEmAndamento()) {
+                emTransito = true;
+                std::cout << p->getNome() << " | Em trânsito: "
+                          << v->getOrigem()->getNome() << " -> "
+                          << v->getDestino()->getNome()
+                          << " | Transporte: " << v->getTransporte()->getNome()
+                          << std::endl;
+                break;
+            }
+        }
+        if (!emTransito) {
+            std::cout << p->getNome() << " | Em: "
+                      << p->getLocalAtual()->getNome() << std::endl;
+        }
+    }
+}
+
+void ControladorDeTransito::relatarTransportes() {
+    std::cout << "\n=== Localização dos Transportes ===" << std::endl;
+
+    for (Transporte* t : transportes) {
+        bool emTransito = false;
+        for (Viagem* v : viagens) {
+            if (v->isEmAndamento() && v->getTransporte() == t) {
+                emTransito = true;
+                std::cout << t->getNome() << " | Em trânsito: "
+                          << v->getOrigem()->getNome() << " -> "
+                          << v->getDestino()->getNome()
+                          << std::endl;
+                break;
+            }
+        }
+        if (!emTransito) {
+            std::cout << t->getNome() << " | Em: "
+                      << t->getLocalAtual()->getNome() << std::endl;
+        }
+    }
+}
+
+void ControladorDeTransito::relatarViagensEmAndamento() {
+    std::cout << "\n=== Viagens em Andamento ===" << std::endl;
+
+    bool alguma = false;
+    for (Viagem* v : viagens) {
+        if (v->isEmAndamento()) {
+            v->relatarEstado();
+            alguma = true;
+        }
+    }
+    if (!alguma)
+        std::cout << "Nenhuma viagem em andamento." << std::endl;
+}
+
+void ControladorDeTransito::relatarCidadesMaisVisitadas() {
+    std::cout << "\n=== Cidades Mais Visitadas ===" << std::endl;
+
+    std::map<Cidade*, int> visitas;
+
+    for (Viagem* v : viagens) {
+        if (v->isConcluida()) {
+            visitas[v->getDestino()]++;
+        }
+    }
+
+    if (visitas.empty()) {
+        std::cout << "Nenhuma viagem concluída ainda." << std::endl;
+        return;
+    }
+
+    std::vector<std::pair<Cidade*, int>> ranking(visitas.begin(), visitas.end());
+    std::sort(ranking.begin(), ranking.end(),
+              [](auto& a, auto& b) { return a.second > b.second; });
+
+    for (auto& par : ranking) {
+        std::cout << par.first->getNome() << " | Visitas: " << par.second << std::endl;
+    }
 }
